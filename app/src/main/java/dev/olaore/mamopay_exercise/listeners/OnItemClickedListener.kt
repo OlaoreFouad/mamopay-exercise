@@ -6,4 +6,6 @@ interface OnItemClickedListener {
 
     fun onBackspaceClicked()
 
+    fun onBackspacePressed()
+
 }

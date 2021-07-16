@@ -24,9 +24,6 @@ class InputFragment : Fragment(), OnItemClickedListener {
     private lateinit var numberAdapter: NumberAdapter
     private lateinit var viewModel: InputViewModel
 
-    private var currentValue = ""
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,6 +33,8 @@ class InputFragment : Fragment(), OnItemClickedListener {
         binding = FragmentInputBinding.inflate(inflater)
         numberAdapter = NumberAdapter(requireContext(), Util.KEYBOARD_VALUES, this)
         viewModel = ViewModelProvider(requireActivity()).get(InputViewModel::class.java)
+
+        viewModel.currentValue = ""
 
         return binding.root
 
@@ -48,7 +47,7 @@ class InputFragment : Fragment(), OnItemClickedListener {
             Log.d("InputFragment", it)
             binding.value = it
         })
-        viewModel.formatCurrency(this.currentValue)
+        viewModel.formatCurrency()
 
         binding.keyboardList.apply {
             layoutManager = GridLayoutManager(requireContext(), 3)
@@ -56,28 +55,33 @@ class InputFragment : Fragment(), OnItemClickedListener {
         }
     }
 
+    override fun onBackspacePressed() {
+        viewModel.currentValue = ""
+        viewModel.formatCurrency()
+    }
+
     override fun onBackspaceClicked() {
 
-        if (currentValue.isBlank()) {
+        if (viewModel.currentValue.isBlank()) {
             return
         }
 
-        currentValue = currentValue.dropLast(1)
-        binding.endsWithPoint = currentValue.endsWith(".")
-        viewModel.formatCurrency(currentValue)
+        viewModel.currentValue = viewModel.currentValue.dropLast(1)
+        binding.endsWithPoint = viewModel.currentValue.endsWith(".")
+        viewModel.formatCurrency()
     }
 
     override fun onNumberClicked(value: String) {
         if (
-            (value == "." && currentValue.contains("."))// check if string already has decimal point
+            (value == "." && viewModel.currentValue.contains("."))// check if string already has decimal point
             || numberEndsWithTwoNonZeroDigits(binding.value!!) // check if number ends with non-zero digits
         ) {
             return
         }
 
-        currentValue += value
-        binding.endsWithPoint = currentValue.endsWith(".")
-        viewModel.formatCurrency(currentValue)
+        viewModel.currentValue += value
+        binding.endsWithPoint = viewModel.currentValue.endsWith(".")
+        viewModel.formatCurrency()
     }
 
     private fun numberEndsWithTwoNonZeroDigits(value: String): Boolean {

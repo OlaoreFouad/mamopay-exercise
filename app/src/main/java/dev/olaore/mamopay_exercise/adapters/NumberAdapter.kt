@@ -44,6 +44,13 @@ class NumberAdapter(
                     interaction.onBackspaceClicked()
                 }
             }
+
+            itemView.setOnLongClickListener {
+                if (isBackspace) {
+                    interaction.onBackspacePressed()
+                }
+                true
+            }
         }
 
         fun bind(value: String) {

@@ -7,9 +7,10 @@ import dev.olaore.mamopay_exercise.mappers.format
 class InputViewModel : ViewModel() {
 
     var input = MutableLiveData<String>("")
+    var currentValue = ""
 
-    fun formatCurrency(_input: String) {
-        input.postValue(_input.format())
+    fun formatCurrency() {
+        input.postValue(currentValue.format())
     }
 
 }
