@@ -46,6 +46,7 @@ class InputFragment : Fragment(), OnItemClickedListener {
 
         viewModel.input.observe(viewLifecycleOwner , Observer {
             Log.d("InputFragment", it)
+            binding.value = it
         })
         viewModel.formatCurrency(this.currentValue)
 
@@ -62,16 +63,26 @@ class InputFragment : Fragment(), OnItemClickedListener {
         }
 
         currentValue = currentValue.dropLast(1)
+        binding.endsWithPoint = currentValue.endsWith(".")
         viewModel.formatCurrency(currentValue)
     }
 
     override fun onNumberClicked(value: String) {
-        if (value == "." && currentValue.contains(".")) {
+        if (
+            (value == "." && currentValue.contains("."))// check if string already has decimal point
+            || numberEndsWithTwoNonZeroDigits(binding.value!!) // check if number ends with non-zero digits
+        ) {
             return
         }
 
         currentValue += value
+        binding.endsWithPoint = currentValue.endsWith(".")
         viewModel.formatCurrency(currentValue)
+    }
+
+    private fun numberEndsWithTwoNonZeroDigits(value: String): Boolean {
+        val lastDigits = value.substring(value.lastIndex - 1, value.length)
+        return !lastDigits.contains("0")
     }
 
 }
